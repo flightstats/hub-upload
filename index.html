@@ -150,10 +150,11 @@
                }
 
                var xhr = new XMLHttpRequest();
-               var url = document.getElementById("hub_url").innerText;
-               var channelName = document.getElementById("channel_name").innerText;
-               console.log(url + channelName);
-               xhr.open("POST", url + channelName, true);
+               var url = document.getElementById("hub_url").value;
+               var channelName = document.getElementById("channel_name").value;
+               var fullUrl = url + "channel/" + channelName;
+               console.log(fullUrl);
+               xhr.open("POST", fullUrl, true);
                xhr.onreadystatechange = function() {
                  if (xhr.readyState == 4 && xhr.status == 200) {
                    var json = JSON.parse(xhr.responseText);

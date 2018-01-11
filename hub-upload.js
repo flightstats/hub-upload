@@ -46,17 +46,28 @@ function displayUploadedFile(file) {
             '<br>Last modified: ' + file.lastModifiedDate +
             '</div>';
         document.getElementById('uploaded').innerHTML = output;
-        uploadToHub(contents);
+        uploadToHub(contents, fileType);
     };
     reader.readAsDataURL(file);
 }
 
-function uploadToHub(contents) {
+function updateProgress(event) {
+    if(event.lengthComputable) {
+        var percentComplete = event.loaded / event.total;
+        var progressBar = document.getElementById("progress-bar");
+        progressBar.style.width = percentComplete + "%";
+    } else {
+    }
+}
+
+function uploadToHub(contents, fileType) {
     var xhr = new XMLHttpRequest();
     var url = document.getElementById("hub_url").value;
     var channelName = document.getElementById("channel_name").value;
     var fullUrl = url + "channel/" + channelName;
+    xhr.addEventListener("progress", updateProgress);
     xhr.open("POST", fullUrl, true);
+    xhr.setRequestHeader("Content-Type", fileType);
     xhr.onreadystatechange = function() {
         var message = document.getElementById("message");
         if (xhr.readyState == 4 && (xhr.status >= 200 && xhr.status < 300) ) {

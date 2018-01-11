@@ -42,6 +42,14 @@
        font: 20pt bold 'Vollkorn';
        min-height: 200px;
      }
+     #progress {
+       width: 100%;
+     }
+     #progress-bar {
+       width: 0%;
+       height: 30px;
+       background-color: #FFD900;
+     }
     </style>
 
   </head>
@@ -82,6 +90,10 @@
             </div>
 
             <div id="message" class="alert">
+            </div>
+
+            <div id="progress">
+              <div id="progress-bar"></div>
             </div>
 
             <div id="file_selector">

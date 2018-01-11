@@ -32,44 +32,46 @@ function displayUploadedFile(file) {
     var fileDataURL = "";
 
     reader.onload = function(e) {
+        var message = document.getElementById("message");
+        message.innerHTML = "";
+        message.classList.remove("alert-success");
+        message.classList.remove("alert-danger");
+
         fileDataURL = e.target.result;
         fileBase64 = fileDataURL.split(",")[1];
         fileType = e.target.result.match(/data:(.*);base64/)[1];
-        output = '<div>fileType: ' + fileType + '</div>';
+        contents = atob(e.target.result.split(",")[1]);
+        output = '<div>File name: ' + file.name +
+            '<br>File type: ' + fileType +
+            '<br>Last modified: ' + file.lastModifiedDate +
+            '</div>';
         document.getElementById('uploaded').innerHTML = output;
-        uploadToHub(fileBase64);
+        uploadToHub(contents);
     };
     reader.readAsDataURL(file);
 }
 
-function uploadToHub(base64) {
-    var request = {
-        "requests" : [{
-            "image": { "content": base64 },
-            "features" : [{
-                "type": "TEXT_DETECTION",
-                "maxResults": "10"
-            }]
-        }]
-    };
-
+function uploadToHub(contents) {
     var xhr = new XMLHttpRequest();
     var url = document.getElementById("hub_url").value;
     var channelName = document.getElementById("channel_name").value;
     var fullUrl = url + "channel/" + channelName;
     xhr.open("POST", fullUrl, true);
     xhr.onreadystatechange = function() {
-        if (xhr.readyState == 4 && xhr.status == 200) {
-            var json = JSON.parse(xhr.responseText);
-            if(json.responses.length > 0) {
-                var body = json.responses[0].textAnnotations[0].description;
-                document.getElementById("result").innerText = body;
-            } else {
-                document.getElementById("result").innerText = json;
-            }
+        var message = document.getElementById("message");
+        if (xhr.readyState == 4 && (xhr.status >= 200 && xhr.status < 300) ) {
+            var json = JSON.parse(xhr.response);
+            var uploadedItemUrl = json._links.self.href;
+            message.innerHTML = "Successfully uploaded file to <a href=\"" + uploadedItemUrl + "\"> " + uploadedItemUrl + "</a>";
+            message.classList.remove("alert-danger");
+            message.classList.add("alert-success");
+
+        } else {
+            message.innerHTML = "Failed to upload file to " + channelName + " channel";
+            message.classList.add("alert-danger");
         }
     };
-    xhr.send(JSON.stringify(request));
+    xhr.send(JSON.stringify(contents));
 }
 
 // Setup the event listeners.

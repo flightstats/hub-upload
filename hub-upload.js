@@ -25,6 +25,9 @@ function handleDragOver(evt) {
     evt.dataTransfer.dropEffect = 'copy';
 }
 
+var content;
+var fileType;
+
 function displayUploadedFile(file) {
     var reader = new FileReader();
     var output = "";
@@ -40,32 +43,22 @@ function displayUploadedFile(file) {
         fileDataURL = e.target.result;
         fileBase64 = fileDataURL.split(",")[1];
         fileType = e.target.result.match(/data:(.*);base64/)[1];
-        contents = atob(e.target.result.split(",")[1]);
+        content = atob(e.target.result.split(",")[1]);
         output = '<div>File name: ' + file.name +
             '<br>File type: ' + fileType +
             '<br>Last modified: ' + file.lastModifiedDate +
+            '<br><input type="button" value="Click to Upload" onclick="uploadToHub();" />' +
             '</div>';
         document.getElementById('uploaded').innerHTML = output;
-        uploadToHub(contents, fileType);
     };
     reader.readAsDataURL(file);
 }
 
-function updateProgress(event) {
-    if(event.lengthComputable) {
-        var percentComplete = event.loaded / event.total;
-        var progressBar = document.getElementById("progress-bar");
-        progressBar.style.width = percentComplete + "%";
-    } else {
-    }
-}
-
-function uploadToHub(contents, fileType) {
+function uploadToHub() {
     var xhr = new XMLHttpRequest();
     var url = document.getElementById("hub_url").value;
     var channelName = document.getElementById("channel_name").value;
     var fullUrl = url + "channel/" + channelName;
-    xhr.addEventListener("progress", updateProgress);
     xhr.open("POST", fullUrl, true);
     xhr.setRequestHeader("Content-Type", fileType);
     xhr.onreadystatechange = function() {
@@ -82,7 +75,7 @@ function uploadToHub(contents, fileType) {
             message.classList.add("alert-danger");
         }
     };
-    xhr.send(JSON.stringify(contents));
+    xhr.send(content);
 }
 
 // Setup the event listeners.

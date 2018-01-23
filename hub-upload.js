@@ -5,6 +5,7 @@ function cache(element, key) {
 function loadFromCache() {
     document.getElementById("hub_url").value = localStorage.getItem('url');
     document.getElementById("channel_name").value = localStorage.getItem('channel');
+    document.getElementById("api_key").value = localStorage.getItem('api_key');
 }
 
 function handleFileSelect(evt) {
@@ -59,6 +60,10 @@ function uploadToHub() {
     var url = document.getElementById("hub_url").value;
     var channelName = document.getElementById("channel_name").value;
     var fullUrl = url + "channel/" + channelName;
+    var apiKey = localStorage.getItem("api_key");
+    if(apiKey) {
+      fullUrl += "?apiKey=" + apiKey;
+    }
     xhr.open("POST", fullUrl, true);
     xhr.setRequestHeader("Content-Type", fileType);
     xhr.onreadystatechange = function() {

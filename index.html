@@ -86,7 +86,12 @@
 
             <div class="form-group">
               <label for="channel_name">Channel Name:</label>
-              <input id="channel_name" class="form-control" type="text" onchange="cache(this, 'channel')"/>
+              <input id="channel_name" class="form-control" type="text" onchange="cache(this, 'channel')" />
+            </div>
+
+            <div class="form-group">
+              <label for="api_key">API Key:</label>
+              <input id="api_key" class="form-control" type="password" onchange="cache(this, 'api_key')" />
             </div>
 
             <div id="message" class="alert"></div>
